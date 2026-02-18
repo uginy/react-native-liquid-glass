@@ -10,6 +10,12 @@
 
 ---
 
+## Demo
+
+<video src="https://github.com/user-attachments/assets/67a8ec01-198a-419b-b619-a53c6c1b8fd1" controls width="360"></video>
+
+---
+
 ## What is this?
 
 **A beautiful "liquid glass" blur effect for React Native cards and UI elements — on both Android and iOS.**
