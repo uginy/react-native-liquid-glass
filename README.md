@@ -13,7 +13,7 @@ Real-time refraction, chromatic aberration, backdrop blur, iridescence, edge glo
 
 ## Demo
 
-[![Watch Demo on YouTube](https://raw.githubusercontent.com/uginy/react-native-liquid-glass/main/modules/liquid-glass/demo.jpg)](https://www.youtube.com/shorts/GCt0NsWkf98)
+https://github.com/user-attachments/assets/67a8ec01-198a-419b-b619-a53c6c1b8fd1
 
 ---
 
