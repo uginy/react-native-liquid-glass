@@ -257,11 +257,16 @@ import {
 ## How does it work?
 
 **Android:** Uses Android 13's `RuntimeShader` (AGSL — Android Graphics Shading Language) to run a custom GPU shader that:
-1. Captures a screenshot of the background view once
-2. Passes it as a texture to the GPU shader
+1. Captures a screenshot of the background view once (shared across all glass views)
+2. Passes it as a `BitmapShader` texture to the GPU shader
 3. Renders per-pixel: blur samples, refraction offset, edge SDF (signed distance field), chromatic aberration, Fresnel, glare, iridescence, noise
+4. `propsDirty` flag ensures AGSL uniform updates only on prop changes — scroll/position redraws cost just 2 uniform calls
 
-**iOS:** Uses a native Metal shader pipeline with shared backdrop texture capture and per-view offset mapping, preserving the same public props API as Android.
+**iOS:** Uses a native Metal shader pipeline:
+1. Shared `MTLDevice` + `MTLRenderPipelineState` — compiled once for all instances
+2. Single `CADisplayLink` shared across all views — one frame callback regardless of how many glass views are on screen
+3. Shared backdrop `MTLTexture` — captured once, reused by all instances with per-view offset mapping
+4. `CAMetalLayer.contentsScale` capped at 2× — prevents overdraw on 3× ProMotion screens
 
 ---
 
@@ -318,7 +323,9 @@ import type { LiquidGlassViewProps } from '@uginy/react-native-liquid-glass';
 - Use `blurRadius` ≤ 60 for best performance on mid-range devices
 - Avoid rendering more than 10–15 glass views simultaneously
 - Use `shadowOpacity={0}` unless you specifically need shadows (saves a render pass)
-- Shared backdrop capture is reused by all glass views; only offset updates are applied during scroll
+- **Shared backdrop** — background capture is done once and reused by all glass views on screen; scroll only updates the view offset (2 AGSL uniform calls on Android, lightweight on iOS)
+- **iOS:** all instances share one `CADisplayLink` and one Metal pipeline — adding more glass views has near-zero overhead on the frame loop
+- **Android:** static props (blur, tint, refraction, etc.) are set on the AGSL shader only when they change, not on every frame
 
 ---
 

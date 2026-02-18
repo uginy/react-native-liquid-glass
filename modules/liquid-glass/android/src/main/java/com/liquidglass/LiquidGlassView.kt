@@ -21,25 +21,25 @@ import kotlin.math.roundToInt
 class LiquidGlassView(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
 
     var blurRadius: Float = 20f
-        set(value) { field = value; invalidate() }
+        set(value) { field = value; propsDirty = true; invalidate() }
     var refractionStrength: Float = 0.03f
-        set(value) { field = value; invalidate() }
+        set(value) { field = value; propsDirty = true; invalidate() }
     var ior: Float = 1.5f
-        set(value) { field = value; invalidate() }
+        set(value) { field = value; propsDirty = true; invalidate() }
     var chromaticAberration: Float = 0.05f
-        set(value) { field = value; invalidate() }
+        set(value) { field = value; propsDirty = true; invalidate() }
     var edgeGlowIntensity: Float = 0.0f
-        set(value) { field = value; invalidate() }
+        set(value) { field = value; propsDirty = true; invalidate() }
     var magnification: Float = 1.1f
-        set(value) { field = value; invalidate() }
+        set(value) { field = value; propsDirty = true; invalidate() }
     var glassOpacity: Float = 0.12f
-        set(value) { field = value; invalidate() }
+        set(value) { field = value; propsDirty = true; invalidate() }
     var tintR: Float = 1.0f
-        set(value) { field = value; invalidate() }
+        set(value) { field = value; propsDirty = true; invalidate() }
     var tintG: Float = 1.0f
-        set(value) { field = value; invalidate() }
+        set(value) { field = value; propsDirty = true; invalidate() }
     var tintB: Float = 1.0f
-        set(value) { field = value; invalidate() }
+        set(value) { field = value; propsDirty = true; invalidate() }
 
     var tintColor: String = "#ffffff"
         set(value) {
@@ -48,27 +48,27 @@ class LiquidGlassView(context: Context, appContext: AppContext) : ExpoView(conte
             tintR = r; tintG = g; tintB = b
         }
     var fresnelPower: Float = 4.0f
-        set(value) { field = value; invalidate() }
+        set(value) { field = value; propsDirty = true; invalidate() }
     var cornerRadius: Float = 32f
-        set(value) { field = value; invalidate() }
+        set(value) { field = value; propsDirty = true; invalidate() }
     var glareIntensity: Float = 0.3f
-        set(value) { field = value; invalidate() }
+        set(value) { field = value; propsDirty = true; invalidate() }
     var borderIntensity: Float = 0.15f
-        set(value) { field = value; invalidate() }
+        set(value) { field = value; propsDirty = true; invalidate() }
     var edgeWidth: Float = 2.0f
-        set(value) { field = value; invalidate() }
+        set(value) { field = value; propsDirty = true; invalidate() }
     var liquidPower: Float = 1.5f
-        set(value) { field = value; invalidate() }
+        set(value) { field = value; propsDirty = true; invalidate() }
     var lightAngle: Float = 0.8f
-        set(value) { field = value; invalidate() }
+        set(value) { field = value; propsDirty = true; invalidate() }
     var saturation: Float = 1.0f
-        set(value) { field = value; invalidate() }
+        set(value) { field = value; propsDirty = true; invalidate() }
     var brightness: Float = 1.0f
-        set(value) { field = value; invalidate() }
+        set(value) { field = value; propsDirty = true; invalidate() }
     var noiseIntensity: Float = 0.02f
-        set(value) { field = value; invalidate() }
+        set(value) { field = value; propsDirty = true; invalidate() }
     var iridescence: Float = 0.0f
-        set(value) { field = value; invalidate() }
+        set(value) { field = value; propsDirty = true; invalidate() }
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private var runtimeShader: RuntimeShader? = null
@@ -76,6 +76,7 @@ class LiquidGlassView(context: Context, appContext: AppContext) : ExpoView(conte
 
     private var offsetX = 0f
     private var offsetY = 0f
+    private var propsDirty = true
 
     private var startupRetryCount = 0
     private var retryCapturePosted = false
@@ -314,6 +315,10 @@ class LiquidGlassView(context: Context, appContext: AppContext) : ExpoView(conte
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         activeInstances++
+        if (runtimeShader == null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            runtimeShader = RuntimeShader(SHADER_SRC)
+        }
+        propsDirty = true
         viewTreeObserver.addOnPreDrawListener(preDrawListener)
         val bmp = sharedBgBitmap
         if (bmp != null && !bmp.isRecycled && sharedBgW > 0f) {
@@ -340,7 +345,7 @@ class LiquidGlassView(context: Context, appContext: AppContext) : ExpoView(conte
         removeCallbacks(retryCaptureRunnable)
         retryCapturePosted = false
         localBitmapShader = null
-        runtimeShader = null
+        propsDirty = true
         activeInstances = maxOf(0, activeInstances - 1)
         if (activeInstances == 0) {
             sharedBgBitmap?.recycle()
@@ -451,28 +456,30 @@ class LiquidGlassView(context: Context, appContext: AppContext) : ExpoView(conte
                 return
             }
             try {
-                val s = runtimeShader ?: RuntimeShader(SHADER_SRC).also { runtimeShader = it }
-                s.setInputShader("backdrop", bs)
+                val s = runtimeShader ?: RuntimeShader(SHADER_SRC).also { runtimeShader = it; it.setInputShader("backdrop", bs) }
+                if (propsDirty) {
+                    s.setFloatUniform("bgSize", sharedBgW, sharedBgH)
+                    s.setFloatUniform("blurRadius", blurRadius)
+                    s.setFloatUniform("refractionStrength", refractionStrength)
+                    s.setFloatUniform("chromaticAberration", chromaticAberration)
+                    s.setFloatUniform("edgeGlow", edgeGlowIntensity)
+                    s.setFloatUniform("glassOpacity", glassOpacity)
+                    s.setFloatUniform("tintColor", tintR, tintG, tintB)
+                    s.setFloatUniform("fresnelPower", fresnelPower)
+                    s.setFloatUniform("cornerRadius", cornerRadius)
+                    s.setFloatUniform("glareIntensity", glareIntensity)
+                    s.setFloatUniform("borderIntensity", borderIntensity)
+                    s.setFloatUniform("edgeWidth", edgeWidth)
+                    s.setFloatUniform("liquidPower", liquidPower)
+                    s.setFloatUniform("lightAngle", lightAngle)
+                    s.setFloatUniform("saturation", saturation)
+                    s.setFloatUniform("brightness", brightness)
+                    s.setFloatUniform("noiseIntensity", noiseIntensity)
+                    s.setFloatUniform("iridescence", iridescence)
+                    propsDirty = false
+                }
                 s.setFloatUniform("resolution", width.toFloat(), height.toFloat())
                 s.setFloatUniform("viewOffset", offsetX, offsetY)
-                s.setFloatUniform("bgSize", sharedBgW, sharedBgH)
-                s.setFloatUniform("blurRadius", blurRadius)
-                s.setFloatUniform("refractionStrength", refractionStrength)
-                s.setFloatUniform("chromaticAberration", chromaticAberration)
-                s.setFloatUniform("edgeGlow", edgeGlowIntensity)
-                s.setFloatUniform("glassOpacity", glassOpacity)
-                s.setFloatUniform("tintColor", tintR, tintG, tintB)
-                s.setFloatUniform("fresnelPower", fresnelPower)
-                s.setFloatUniform("cornerRadius", cornerRadius)
-                s.setFloatUniform("glareIntensity", glareIntensity)
-                s.setFloatUniform("borderIntensity", borderIntensity)
-                s.setFloatUniform("edgeWidth", edgeWidth)
-                s.setFloatUniform("liquidPower", liquidPower)
-                s.setFloatUniform("lightAngle", lightAngle)
-                s.setFloatUniform("saturation", saturation)
-                s.setFloatUniform("brightness", brightness)
-                s.setFloatUniform("noiseIntensity", noiseIntensity)
-                s.setFloatUniform("iridescence", iridescence)
                 paint.shader = s
                 canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), paint)
             } catch (_: Exception) {}

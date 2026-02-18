@@ -2,6 +2,25 @@
 
 All notable changes to `react-native-liquid-glass` will be documented here.
 
+## [1.2.5] - 2026-02-18
+
+### Performance
+
+**iOS:**
+- Shared `CADisplayLink` — single display link for all `LiquidGlassView` instances instead of per-instance; automatically started/stopped as views attach/detach
+- `CAMetalLayer.contentsScale` and `drawableSize` capped at 2× — eliminates excessive pixel fill on 3× ProMotion displays
+- Metal device and render pipeline shared across all instances (single GPU compilation)
+- `NSHashTable.weakObjects()` subscriber list — no strong retain cycles on view instances
+
+**Android:**
+- `propsDirty` flag — 18 static AGSL uniforms (blur, tint, refraction, etc.) set only when a prop changes; scroll/position redraws only update `resolution` + `viewOffset` (2 calls instead of 20)
+- `RuntimeShader` preserved across `detach → attach` cycle — no redundant AGSL recompilation on re-attach
+- `onDraw` fallback for newly created `RuntimeShader` immediately sets `backdrop` input shader
+
+### Fixed
+
+- **iOS podspec:** removed `.metal` from `source_files` and `resources` — Metal source is embedded as a Swift string fallback, eliminating the Metal Toolchain compile step (fixes build on machines without `MetalToolchain` component)
+
 ## [1.2.4] - 2026-02-18
 
 ### Added
