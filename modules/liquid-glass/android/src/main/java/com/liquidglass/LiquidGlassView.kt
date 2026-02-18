@@ -107,6 +107,7 @@ class LiquidGlassView(context: Context, appContext: AppContext) : ExpoView(conte
         private const val MAX_STARTUP_RETRIES = 40
         private const val MIN_VALID_ALPHA = 10
         private var activeInstances = 0
+        private val allInstances = mutableSetOf<LiquidGlassView>()
 
         private const val SHADER_SRC = """
             uniform shader backdrop;
@@ -315,6 +316,7 @@ class LiquidGlassView(context: Context, appContext: AppContext) : ExpoView(conte
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         activeInstances++
+        allInstances.add(this)
         if (runtimeShader == null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             runtimeShader = RuntimeShader(SHADER_SRC)
         }
@@ -341,6 +343,7 @@ class LiquidGlassView(context: Context, appContext: AppContext) : ExpoView(conte
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
+        allInstances.remove(this)
         viewTreeObserver.removeOnPreDrawListener(preDrawListener)
         removeCallbacks(retryCaptureRunnable)
         retryCapturePosted = false
@@ -433,6 +436,14 @@ class LiquidGlassView(context: Context, appContext: AppContext) : ExpoView(conte
 
             startupRetryCount = 0
             retryCapturePosted = false
+
+            for (other in allInstances) {
+                if (other !== this && other.isAttachedToWindow && other.localBitmapShader == null) {
+                    other.buildLocalShader(bmp)
+                    other.post { other.syncOffset() }
+                }
+            }
+
             invalidate()
         } catch (_: Exception) {
             scheduleRetry()
@@ -449,11 +460,14 @@ class LiquidGlassView(context: Context, appContext: AppContext) : ExpoView(conte
             return
         }
         if (canvas.isHardwareAccelerated && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val bs = localBitmapShader
+            var bs = localBitmapShader
             if (bs == null) {
                 buildLocalShader(bmp)
-                super.onDraw(canvas)
-                return
+                bs = localBitmapShader
+                if (bs == null) {
+                    super.onDraw(canvas)
+                    return
+                }
             }
             try {
                 val s = runtimeShader ?: RuntimeShader(SHADER_SRC).also { runtimeShader = it; it.setInputShader("backdrop", bs) }
