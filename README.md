@@ -1,33 +1,194 @@
-# Liquid Glass for React Native
+# @uginy/react-native-liquid-glass
 
-Monorepo containing the `react-native-liquid-glass` Expo module and a demo app.
+[![npm version](https://img.shields.io/npm/v/@uginy/react-native-liquid-glass.svg)](https://www.npmjs.com/package/@uginy/react-native-liquid-glass)
+[![license](https://img.shields.io/npm/l/@uginy/react-native-liquid-glass.svg)](LICENSE)
+[![platform android](https://img.shields.io/badge/Android-13%2B-brightgreen.svg?logo=android)](https://developer.android.com/about/versions/13)
+[![platform ios](https://img.shields.io/badge/iOS-15%2B-blue.svg?logo=apple)](https://developer.apple.com)
 
-```
-glass/
-├── modules/liquid-glass/   # npm package → react-native-liquid-glass
-└── app/                    # Expo demo app (Android)
-```
+> 🔮 **Liquid glass blur effect for React Native** — AGSL GPU shaders on Android, UIVisualEffectView on iOS.
 
-## Module
+Real-time refraction, chromatic aberration, backdrop blur, iridescence, edge glow and more — at **60–120 FPS**.
 
-[`react-native-liquid-glass`](./modules/liquid-glass) — high-performance liquid glass effect powered by native **AGSL GPU shaders** (Android 13+).
+---
 
-## Demo App
+## What is this?
 
-The `app/` directory is a standalone Expo project that uses the module as a local dependency.
+**A beautiful "liquid glass" blur effect for React Native cards and UI elements — on both Android and iOS.**
+
+The "liquid glass" aesthetic was popularized by Apple in iOS 26. It gives UI elements a translucent, frosted-glass look with light refraction, blurred backdrop, edge glow, and glare — similar to looking through a piece of slightly curved glass.
+
+**The problem this solves:** React Native has no built-in way to achieve this effect with real refraction, chromatic aberration, and GPU-accelerated blur on Android. On iOS, UIKit's blur is basic. This library brings high-quality, fully customizable glass effects to both platforms.
+
+---
+
+## Platform support
+
+| Platform | Implementation | Min version | Notes |
+|----------|---------------|-------------|-------|
+| **Android** | AGSL GPU shader (`RuntimeShader`) | API 33 (Android 13) | Full shader: refraction, chromatic aberration, iridescence |
+| **iOS** | `UIVisualEffectView` + gradient overlays | iOS 15+ | Native blur with tint, glare, border effects |
+
+---
+
+## Installation
 
 ```bash
-cd app
-npm install
-npx expo run:android
+npm install @uginy/react-native-liquid-glass
+# or
+yarn add @uginy/react-native-liquid-glass
 ```
+
+**If you use Expo (most common):**
+
+```bash
+npx expo prebuild --clean
+npx expo run:android   # for Android
+npx expo run:ios       # for iOS
+```
+
+> ⚠️ This library uses native code. **Expo Go does not work** — you need a dev build or bare React Native.
+
+---
+
+## Quick Start
+
+```tsx
+import React from 'react';
+import { ImageBackground, Text, StyleSheet } from 'react-native';
+import { LiquidGlassView } from '@uginy/react-native-liquid-glass';
+
+const bg = require('./assets/background.png');
+
+export default function App() {
+  return (
+    <ImageBackground source={bg} style={styles.bg}>
+      <LiquidGlassView style={styles.card}>
+        <Text style={styles.text}>Hello, Glass! 🔮</Text>
+      </LiquidGlassView>
+    </ImageBackground>
+  );
+}
+
+const styles = StyleSheet.create({
+  bg: { flex: 1, justifyContent: 'center', padding: 20 },
+  card: { borderRadius: 24, padding: 20 },
+  text: { color: '#fff', fontSize: 20, fontWeight: '700' },
+});
+```
+
+---
+
+## Examples
+
+### Frosted glass
+
+```tsx
+<LiquidGlassView
+  blurRadius={60}
+  tintColor="#ffffff"
+  glassOpacity={0.12}
+  noiseIntensity={0.08}
+  cornerRadius={16}
+  style={{ padding: 20 }}
+>
+  <Text style={{ color: '#fff' }}>Frosted 🧊</Text>
+</LiquidGlassView>
+```
+
+### Crystal / diamond
+
+```tsx
+<LiquidGlassView
+  blurRadius={20}
+  refractionStrength={0.12}
+  chromaticAberration={0.3}
+  glareIntensity={0.8}
+  edgeGlowIntensity={0.5}
+  cornerRadius={32}
+  style={{ width: 200, height: 200 }}
+>
+  <Text style={{ color: '#fff' }}>Crystal 💎</Text>
+</LiquidGlassView>
+```
+
+### Iridescent / rainbow
+
+```tsx
+<LiquidGlassView
+  iridescence={0.7}
+  edgeGlowIntensity={0.3}
+  blurRadius={40}
+  cornerRadius={24}
+  style={{ padding: 20 }}
+>
+  <Text style={{ color: '#fff' }}>Iridescent 🌈</Text>
+</LiquidGlassView>
+```
+
+### Built-in presets
+
+```tsx
+import { LiquidGlassView, LIQUID_GLASS_CRYSTAL } from '@uginy/react-native-liquid-glass';
+
+<LiquidGlassView {...LIQUID_GLASS_CRYSTAL} style={{ borderRadius: 24, padding: 20 }}>
+  <Text style={{ color: '#fff' }}>Crystal preset</Text>
+</LiquidGlassView>
+```
+
+Available presets: `LIQUID_GLASS_DEFAULTS` · `LIQUID_GLASS_FROSTED` · `LIQUID_GLASS_CRYSTAL` · `LIQUID_GLASS_WARM` · `LIQUID_GLASS_IRIDESCENT`
+
+---
+
+## Key Props
+
+| Prop | Default | Description |
+|---|---|---|
+| `blurRadius` | `20` | Blur strength (0–100) |
+| `refractionStrength` | `0.03` | Edge distortion amount |
+| `tintColor` | `#ffffff` | Glass tint color |
+| `glassOpacity` | `0.05` | Tint blend strength |
+| `chromaticAberration` | `0.05` | RGB color split at edges |
+| `edgeGlowIntensity` | `0.18` | Fresnel edge glow |
+| `glareIntensity` | `0.3` | Specular highlight |
+| `iridescence` | `0.0` | Rainbow shimmer |
+| `cornerRadius` | `24` | Rounded corners |
+| `noiseIntensity` | `0.0` | Film grain texture |
+
+→ [Full documentation](./modules/liquid-glass/README.md)
+
+---
 
 ## Requirements
 
-- Android 13+ (API 33) — AGSL `RuntimeShader`
-- Expo SDK 54+
-- New Architecture enabled
+| | Requirement |
+|---|---|
+| Android | API 33+ (Android 13+), New Architecture |
+| iOS | iOS 15+ |
+| React Native | New Architecture (`newArchEnabled=true`) |
+| Expo | SDK 54+ |
+
+---
+
+## Limitations
+
+| | Android | iOS |
+|---|---|---|
+| Refraction / distortion | ✅ Full shader | ❌ Not available |
+| Chromatic aberration | ✅ Yes | ❌ Not available |
+| Live backdrop blur | ✅ Yes | ✅ Yes (system-level) |
+| Expo Go | ❌ | ❌ |
+| Web | ❌ | ❌ |
+
+---
+
+## Repository structure
+
+```
+glass/
+├── modules/liquid-glass/   # npm package → @uginy/react-native-liquid-glass
+└── app/                    # Expo demo app (Android + iOS)
+```
 
 ## License
 
-MIT
+MIT © [Ugin](https://github.com/uginy)
