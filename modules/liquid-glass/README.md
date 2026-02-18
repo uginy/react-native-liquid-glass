@@ -12,7 +12,7 @@
 
 ## Demo
 
-https://github.com/user-attachments/assets/67a8ec01-198a-419b-b619-a53c6c1b8fd1
+[![Watch Demo on YouTube](https://img.youtube.com/vi/GCt0NsWkf98/maxresdefault.jpg)](https://youtube.com/shorts/GCt0NsWkf98)
 
 ---
 
