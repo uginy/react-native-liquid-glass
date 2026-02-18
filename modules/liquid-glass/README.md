@@ -13,7 +13,7 @@
 
 The "liquid glass" aesthetic became popular in modern mobile UI design. It gives UI elements a translucent, frosted-glass look with light refraction, blurred backdrop, edge glow, and glare — similar to looking through a piece of slightly curved glass.
 
-**The problem this solves:** React Native has no built-in way to achieve this effect with rich glass controls across platforms. This library provides a unified API with high-fidelity Android shaders and a native iOS compositor.
+**The problem this solves:** React Native has no built-in way to achieve this effect with rich glass controls across platforms. This library provides a unified API with high-fidelity Android shaders and a native iOS Metal renderer.
 
 ---
 
@@ -22,7 +22,7 @@ The "liquid glass" aesthetic became popular in modern mobile UI design. It gives
 | Platform | Implementation | Min version | Notes |
 |----------|---------------|-------------|-------|
 | **Android** | AGSL GPU shader (`RuntimeShader`) | API 33 (Android 13) | Full shader: refraction, chromatic aberration, iridescence |
-| **iOS** | `UIVisualEffectView` + native compositing layers | iOS 15+ | Same props API, tuned iOS rendering pipeline |
+| **iOS** | Metal shader + shared backdrop texture | iOS 15+ | Same props API, iOS-native GPU pipeline |
 
 ---
 
@@ -261,7 +261,7 @@ import {
 2. Passes it as a texture to the GPU shader
 3. Renders per-pixel: blur samples, refraction offset, edge SDF (signed distance field), chromatic aberration, Fresnel, glare, iridescence, noise
 
-**iOS:** Uses `UIVisualEffectView` with a native compositing stack (tint, glare, chroma split, edge glow, noise) and applies the same public props so behavior stays API-compatible with Android.
+**iOS:** Uses a native Metal shader pipeline with shared backdrop texture capture and per-view offset mapping, preserving the same public props API as Android.
 
 ---
 
@@ -270,10 +270,10 @@ import {
 | | Android | iOS |
 |---|---|---|
 | Live blur (updates on scroll) | ✅ Yes | ✅ Yes |
-| Refraction / distortion | ✅ Full shader | ⚠️ Simulated via native compositor |
-| Chromatic aberration | ✅ Yes | ✅ Layer-based simulation |
-| Blur style control | ✅ Exact radius | ⚠️ Mapped to material styles |
-| Iridescence | ✅ Yes | ✅ Layer-based simulation |
+| Refraction / distortion | ✅ Full shader | ✅ Full shader |
+| Chromatic aberration | ✅ Yes | ✅ Yes |
+| Blur style control | ✅ Exact radius | ✅ Exact radius |
+| Iridescence | ✅ Yes | ✅ Yes |
 | Minimum OS | Android 13+ | iOS 15+ |
 | Expo Go | ❌ Not supported | ❌ Not supported |
 | Web | ❌ Not supported | ❌ Not supported |
@@ -318,7 +318,7 @@ import type { LiquidGlassViewProps } from '@uginy/react-native-liquid-glass';
 - Use `blurRadius` ≤ 60 for best performance on mid-range devices
 - Avoid rendering more than 10–15 glass views simultaneously
 - Use `shadowOpacity={0}` unless you specifically need shadows (saves a render pass)
-- On Android, the background is captured once — the glass views don't re-capture on every frame unless the background changes
+- Shared backdrop capture is reused by all glass views; only offset updates are applied during scroll
 
 ---
 

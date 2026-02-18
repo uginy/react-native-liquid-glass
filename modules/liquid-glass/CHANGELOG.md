@@ -7,12 +7,13 @@ All notable changes to `react-native-liquid-glass` will be documented here.
 ### Added
 
 - Re-enabled iOS native module autolinking in `expo-module.config.json`
-- Native iOS `LiquidGlassView` rebuilt with `UIVisualEffectView` + compositor layers
+- Native iOS `LiquidGlassView` rebuilt on Metal (shared backdrop texture + per-view GPU shader rendering)
 - iOS implementation now supports the same public props as Android (`blurRadius`, `refractionStrength`, `ior`, `chromaticAberration`, `edgeGlowIntensity`, `magnification`, `glassOpacity`, `glassColor`, `fresnelPower`, `cornerRadius`, `glareIntensity`, `borderIntensity`, `edgeWidth`, `liquidPower`, `lightAngle`, `saturation`, `brightness`, `noiseIntensity`, `iridescence`, `shadowOpacity`)
 
 ### Changed
 
 - JS wrapper now uses native `LiquidGlass` view on both Android and iOS
+- iOS shader loading now prefers precompiled Metal library to avoid runtime compilation during app startup
 - Package metadata and README updated to document cross-platform support and iOS requirements
 
 ## [1.1.0] - 2026-02-18

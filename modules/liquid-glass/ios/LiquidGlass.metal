@@ -1,9 +1,3 @@
-import Foundation
-import Metal
-
-private let kLiquidGlassVertexFn = "lg_vertex"
-private let kLiquidGlassFragmentFn = "lg_fragment"
-private let kLiquidGlassMetalFallbackSource = #"""
 #include <metal_stdlib>
 using namespace metal;
 
@@ -196,76 +190,4 @@ fragment float4 lg_fragment(VertexOut in [[stage_in]],
     res.rgb = clamp(res.rgb, 0.0, 1.0);
     res.a = 1.0;
     return res * mask;
-}
-"""#
-
-private func hasLiquidGlassFunctions(_ library: MTLLibrary) -> Bool {
-    library.makeFunction(name: kLiquidGlassVertexFn) != nil
-        && library.makeFunction(name: kLiquidGlassFragmentFn) != nil
-}
-
-private func loadPrecompiledLibrary(device: MTLDevice) -> MTLLibrary? {
-    let bundles: [Bundle] = [Bundle(for: LiquidGlassView.self), Bundle.main]
-
-    for bundle in bundles {
-        if let library = try? device.makeDefaultLibrary(bundle: bundle), hasLiquidGlassFunctions(library) {
-            NSLog("[LiquidGlass] Using precompiled Metal default library")
-            return library
-        }
-
-        if let url = bundle.url(forResource: "default", withExtension: "metallib"),
-           let library = try? device.makeLibrary(URL: url),
-           hasLiquidGlassFunctions(library) {
-            NSLog("[LiquidGlass] Using precompiled Metal library at %@", url.lastPathComponent)
-            return library
-        }
-    }
-
-    return nil
-}
-
-private func loadRuntimeFallbackLibrary(device: MTLDevice) -> MTLLibrary? {
-    let bundles: [Bundle] = [Bundle(for: LiquidGlassView.self), Bundle.main]
-
-    for bundle in bundles {
-        if let sourceURL = bundle.url(forResource: "LiquidGlass", withExtension: "metal"),
-           let source = try? String(contentsOf: sourceURL, encoding: .utf8),
-           let library = try? device.makeLibrary(source: source, options: nil),
-           hasLiquidGlassFunctions(library) {
-            NSLog("[LiquidGlass] Using runtime Metal compilation fallback (bundle source)")
-            return library
-        }
-    }
-
-    if let library = try? device.makeLibrary(source: kLiquidGlassMetalFallbackSource, options: nil),
-       hasLiquidGlassFunctions(library) {
-        NSLog("[LiquidGlass] Using runtime Metal compilation fallback (embedded source)")
-        return library
-    }
-
-    return nil
-}
-
-func makeLiquidGlassPipeline(device: MTLDevice) -> MTLRenderPipelineState? {
-    guard let library = loadPrecompiledLibrary(device: device) ?? loadRuntimeFallbackLibrary(device: device),
-          let vertex = library.makeFunction(name: kLiquidGlassVertexFn),
-          let fragment = library.makeFunction(name: kLiquidGlassFragmentFn) else {
-        NSLog("[LiquidGlass] Failed to load Metal shader functions")
-        return nil
-    }
-
-    let desc = MTLRenderPipelineDescriptor()
-    desc.vertexFunction = vertex
-    desc.fragmentFunction = fragment
-    desc.colorAttachments[0].pixelFormat = .bgra8Unorm
-
-    desc.colorAttachments[0].isBlendingEnabled = true
-    desc.colorAttachments[0].rgbBlendOperation = .add
-    desc.colorAttachments[0].alphaBlendOperation = .add
-    desc.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
-    desc.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
-    desc.colorAttachments[0].sourceAlphaBlendFactor = .one
-    desc.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
-
-    return try? device.makeRenderPipelineState(descriptor: desc)
 }

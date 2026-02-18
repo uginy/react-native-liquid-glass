@@ -105,7 +105,7 @@ class LiquidGlassView(context: Context, appContext: AppContext) : ExpoView(conte
 
         private const val MAX_STARTUP_RETRIES = 40
         private const val MIN_VALID_ALPHA = 10
-        private const val POSITION_DELTA_PX = 0.5f
+        private var activeInstances = 0
 
         private const val SHADER_SRC = """
             uniform shader backdrop;
@@ -194,14 +194,16 @@ class LiquidGlassView(context: Context, appContext: AppContext) : ExpoView(conte
                 half4 edgeBlur = sampleBlurred(uvRefracted, blurAmt);
                 half4 res = mix(centerBlur, edgeBlur, half(liquidFx));
 
-                // Chromatic aberration — direct pixel offset, minimal blur, linear scaling
-                float caOffset = chromaticAberration * 18.0;
-                float tinyBlur = min(blurRadius * 0.1, 2.5);
-                half rSample = sampleBlurred(uvRefracted + normal * caOffset, tinyBlur).r;
-                half bSample = sampleBlurred(uvRefracted - normal * caOffset, tinyBlur).b;
-                float caMix = clamp(chromaticAberration * 1.2, 0.0, 0.9);
-                res.r = mix(res.r, rSample, half(caMix));
-                res.b = mix(res.b, bSample, half(caMix));
+                // Chromatic aberration — skip entirely when disabled
+                if (chromaticAberration > 0.001) {
+                    float caOffset = chromaticAberration * 18.0;
+                    float tinyBlur = min(blurRadius * 0.1, 2.5);
+                    half rSample = sampleBlurred(uvRefracted + normal * caOffset, tinyBlur).r;
+                    half bSample = sampleBlurred(uvRefracted - normal * caOffset, tinyBlur).b;
+                    float caMix = clamp(chromaticAberration * 1.2, 0.0, 0.9);
+                    res.r = mix(res.r, rSample, half(caMix));
+                    res.b = mix(res.b, bSample, half(caMix));
+                }
 
                 // Saturation and brightness
                 res.rgb = applySaturation(res.rgb, saturation);
@@ -311,6 +313,7 @@ class LiquidGlassView(context: Context, appContext: AppContext) : ExpoView(conte
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
+        activeInstances++
         viewTreeObserver.addOnPreDrawListener(preDrawListener)
         val bmp = sharedBgBitmap
         if (bmp != null && !bmp.isRecycled && sharedBgW > 0f) {
@@ -338,13 +341,21 @@ class LiquidGlassView(context: Context, appContext: AppContext) : ExpoView(conte
         retryCapturePosted = false
         localBitmapShader = null
         runtimeShader = null
+        activeInstances = maxOf(0, activeInstances - 1)
+        if (activeInstances == 0) {
+            sharedBgBitmap?.recycle()
+            sharedBgBitmap = null
+            sharedBgView = null
+            sharedBgW = 0f
+            sharedBgH = 0f
+        }
     }
 
     private fun buildLocalShader(bmp: Bitmap) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
         val bs = BitmapShader(bmp, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
         localBitmapShader = bs
-        val s = RuntimeShader(SHADER_SRC).also { runtimeShader = it }
+        val s = runtimeShader ?: RuntimeShader(SHADER_SRC).also { runtimeShader = it }
         s.setInputShader("backdrop", bs)
         paint.shader = s
         invalidate()
@@ -376,7 +387,8 @@ class LiquidGlassView(context: Context, appContext: AppContext) : ExpoView(conte
             buildLocalShader(bmp)
             return
         }
-        if (abs(newX - offsetX) >= POSITION_DELTA_PX || abs(newY - offsetY) >= POSITION_DELTA_PX) {
+        val densityDelta = 0.5f * resources.displayMetrics.density
+        if (abs(newX - offsetX) >= densityDelta || abs(newY - offsetY) >= densityDelta) {
             offsetX = newX; offsetY = newY
             invalidate()
         }

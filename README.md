@@ -5,7 +5,7 @@
 [![platform android](https://img.shields.io/badge/Android-13%2B-brightgreen.svg?logo=android)](https://developer.android.com/about/versions/13)
 [![platform ios](https://img.shields.io/badge/iOS-15%2B-blue.svg?logo=apple)](https://developer.apple.com)
 
-> 🔮 **Liquid glass blur effect for React Native** — AGSL GPU shaders on Android, native glass compositor on iOS.
+> 🔮 **Liquid glass blur effect for React Native** — AGSL GPU shader on Android, Metal GPU shader on iOS.
 
 Real-time refraction, chromatic aberration, backdrop blur, iridescence, edge glow and more — at **60–120 FPS**.
 
@@ -17,7 +17,7 @@ Real-time refraction, chromatic aberration, backdrop blur, iridescence, edge glo
 
 The "liquid glass" aesthetic became popular in modern mobile UI design. It gives UI elements a translucent, frosted-glass look with light refraction, blurred backdrop, edge glow, and glare — similar to looking through a piece of slightly curved glass.
 
-**The problem this solves:** React Native has no built-in way to achieve this effect with rich glass controls across platforms. This library provides a unified API with high-fidelity Android shaders and a native iOS compositor.
+**The problem this solves:** React Native has no built-in way to achieve this effect with rich glass controls across platforms. This library provides a unified API with high-fidelity Android shaders and a native iOS Metal renderer.
 
 ---
 
@@ -26,7 +26,7 @@ The "liquid glass" aesthetic became popular in modern mobile UI design. It gives
 | Platform | Implementation | Min version | Notes |
 |----------|---------------|-------------|-------|
 | **Android** | AGSL GPU shader (`RuntimeShader`) | API 33 (Android 13) | Full shader: refraction, chromatic aberration, iridescence |
-| **iOS** | `UIVisualEffectView` + native compositing layers | iOS 15+ | Same props API, tuned iOS rendering pipeline |
+| **iOS** | Metal shader + shared backdrop texture | iOS 15+ | Same props API, iOS-native GPU pipeline |
 
 ---
 
@@ -173,8 +173,8 @@ Available presets: `LIQUID_GLASS_DEFAULTS` · `LIQUID_GLASS_FROSTED` · `LIQUID_
 
 | | Android | iOS |
 |---|---|---|
-| Refraction / distortion | ✅ Full shader | ⚠️ Simulated via native compositor |
-| Chromatic aberration | ✅ Yes | ✅ Layer-based simulation |
+| Refraction / distortion | ✅ Full shader | ✅ Full shader |
+| Chromatic aberration | ✅ Yes | ✅ Yes |
 | Live backdrop blur | ✅ Yes | ✅ Yes |
 | Expo Go | ❌ | ❌ |
 | Web | ❌ | ❌ |
