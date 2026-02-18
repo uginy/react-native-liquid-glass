@@ -5,7 +5,9 @@ import { Platform, View } from 'react-native';
 import { LiquidGlassViewProps, LIQUID_GLASS_DEFAULTS } from './LiquidGlass.types';
 
 const NativeView: React.ComponentType<any> =
-  Platform.OS === 'android' ? requireNativeView('LiquidGlass') : View;
+  Platform.OS === 'android' || Platform.OS === 'ios'
+    ? requireNativeView('LiquidGlass')
+    : View;
 
 export default function LiquidGlassView({
   children,
@@ -31,13 +33,13 @@ export default function LiquidGlassView({
   noiseIntensity = LIQUID_GLASS_DEFAULTS.noiseIntensity,
   iridescence = LIQUID_GLASS_DEFAULTS.iridescence,
 }: LiquidGlassViewProps) {
-  if (Platform.OS !== 'android') {
+  if (Platform.OS !== 'android' && Platform.OS !== 'ios') {
     return <View style={style}>{children}</View>;
   }
 
   const shadowStyle =
     shadowOpacity > 0
-      ? { elevation: 8, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity, shadowRadius: 12 }
+      ? { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity, shadowRadius: 12, elevation: 8 }
       : { elevation: 0, shadowColor: 'transparent', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0, shadowRadius: 0 };
 
   return (

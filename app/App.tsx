@@ -387,6 +387,7 @@ const styles = StyleSheet.create({
   scrollView: { flex: 1 },
   scrollContent: { paddingHorizontal: 16, paddingTop: 10, gap: 16 },
   card: { width: '100%', minHeight: 90, borderRadius: 24 },
+  plainCard: { backgroundColor: 'rgba(255,255,255,0.08)' },
   cardContent: { flexDirection: 'row', alignItems: 'center', padding: 20, gap: 16 },
   cardIcon: { fontSize: 36 },
   cardTextContainer: { flex: 1 },

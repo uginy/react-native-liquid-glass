@@ -12,6 +12,10 @@
       "resizeMode": "contain",
       "backgroundColor": "#0a0a1a"
     },
+    "ios": {
+      "bundleIdentifier": "com.liquidglass.demo",
+      "supportsTablet": false
+    },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",

@@ -1,7 +1,7 @@
 {
   "name": "react-native-liquid-glass",
-  "version": "1.1.0",
-  "description": "High-performance liquid glass effect for Android using native AGSL GPU shaders",
+  "version": "1.2.0",
+  "description": "High-performance liquid glass effect for React Native — AGSL GPU shaders on Android, UIVisualEffectView on iOS",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "files": [
@@ -9,6 +9,7 @@
     "android/src/",
     "android/build.gradle",
     "android/AndroidManifest.xml",
+    "ios/",
     "src/",
     "expo-module.config.json",
     "README.md",
@@ -24,6 +25,7 @@
     "react-native",
     "expo",
     "android",
+    "ios",
     "glass",
     "liquid-glass",
     "agsl",
