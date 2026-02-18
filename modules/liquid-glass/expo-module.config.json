@@ -1,9 +1,6 @@
 {
-  "platforms": ["android", "ios"],
+  "platforms": ["android"],
   "android": {
     "modules": ["com.liquidglass.LiquidGlassModule"]
-  },
-  "ios": {
-    "modules": ["LiquidGlassModule"]
   }
 }

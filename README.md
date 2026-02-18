@@ -3,9 +3,8 @@
 [![npm version](https://img.shields.io/npm/v/@uginy/react-native-liquid-glass.svg)](https://www.npmjs.com/package/@uginy/react-native-liquid-glass)
 [![license](https://img.shields.io/npm/l/@uginy/react-native-liquid-glass.svg)](LICENSE)
 [![platform android](https://img.shields.io/badge/Android-13%2B-brightgreen.svg?logo=android)](https://developer.android.com/about/versions/13)
-[![platform ios](https://img.shields.io/badge/iOS-15%2B-blue.svg?logo=apple)](https://developer.apple.com)
 
-> 🔮 **Liquid glass blur effect for React Native** — AGSL GPU shaders on Android, UIVisualEffectView on iOS.
+> 🔮 **Liquid glass blur effect for React Native** — Android-focused AGSL GPU shaders.
 
 Real-time refraction, chromatic aberration, backdrop blur, iridescence, edge glow and more — at **60–120 FPS**.
 
@@ -13,11 +12,11 @@ Real-time refraction, chromatic aberration, backdrop blur, iridescence, edge glo
 
 ## What is this?
 
-**A beautiful "liquid glass" blur effect for React Native cards and UI elements — on both Android and iOS.**
+**A beautiful "liquid glass" blur effect for React Native cards and UI elements — specialized for Android.**
 
-The "liquid glass" aesthetic was popularized by Apple in iOS 26. It gives UI elements a translucent, frosted-glass look with light refraction, blurred backdrop, edge glow, and glare — similar to looking through a piece of slightly curved glass.
+The "liquid glass" aesthetic became popular in modern mobile UI design. It gives UI elements a translucent, frosted-glass look with light refraction, blurred backdrop, edge glow, and glare — similar to looking through a piece of slightly curved glass.
 
-**The problem this solves:** React Native has no built-in way to achieve this effect with real refraction, chromatic aberration, and GPU-accelerated blur on Android. On iOS, UIKit's blur is basic. This library brings high-quality, fully customizable glass effects to both platforms.
+**The problem this solves:** React Native has no built-in way to achieve this effect with real refraction, chromatic aberration, and GPU-accelerated blur on Android. This library brings a high-quality, fully customizable glass effect optimized for Android.
 
 ---
 
@@ -26,7 +25,6 @@ The "liquid glass" aesthetic was popularized by Apple in iOS 26. It gives UI ele
 | Platform | Implementation | Min version | Notes |
 |----------|---------------|-------------|-------|
 | **Android** | AGSL GPU shader (`RuntimeShader`) | API 33 (Android 13) | Full shader: refraction, chromatic aberration, iridescence |
-| **iOS** | `UIVisualEffectView` + gradient overlays | iOS 15+ | Native blur with tint, glare, border effects |
 
 ---
 
@@ -43,7 +41,6 @@ yarn add @uginy/react-native-liquid-glass
 ```bash
 npx expo prebuild --clean
 npx expo run:android   # for Android
-npx expo run:ios       # for iOS
 ```
 
 > ⚠️ This library uses native code. **Expo Go does not work** — you need a dev build or bare React Native.
@@ -163,7 +160,6 @@ Available presets: `LIQUID_GLASS_DEFAULTS` · `LIQUID_GLASS_FROSTED` · `LIQUID_
 | | Requirement |
 |---|---|
 | Android | API 33+ (Android 13+), New Architecture |
-| iOS | iOS 15+ |
 | React Native | New Architecture (`newArchEnabled=true`) |
 | Expo | SDK 54+ |
 
@@ -171,13 +167,13 @@ Available presets: `LIQUID_GLASS_DEFAULTS` · `LIQUID_GLASS_FROSTED` · `LIQUID_
 
 ## Limitations
 
-| | Android | iOS |
-|---|---|---|
-| Refraction / distortion | ✅ Full shader | ❌ Not available |
-| Chromatic aberration | ✅ Yes | ❌ Not available |
-| Live backdrop blur | ✅ Yes | ✅ Yes (system-level) |
-| Expo Go | ❌ | ❌ |
-| Web | ❌ | ❌ |
+| | Android |
+|---|---|
+| Refraction / distortion | ✅ Full shader |
+| Chromatic aberration | ✅ Yes |
+| Live backdrop blur | ✅ Yes |
+| Expo Go | ❌ |
+| Web | ❌ |
 
 ---
 
@@ -186,7 +182,7 @@ Available presets: `LIQUID_GLASS_DEFAULTS` · `LIQUID_GLASS_FROSTED` · `LIQUID_
 ```
 glass/
 ├── modules/liquid-glass/   # npm package → @uginy/react-native-liquid-glass
-└── app/                    # Expo demo app (Android + iOS)
+└── app/                    # Expo demo app (Android-first)
 ```
 
 ## License

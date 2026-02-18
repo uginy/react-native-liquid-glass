@@ -2,6 +2,16 @@
   "name": "liquid-glass-demo",
   "version": "1.0.0",
   "main": "index.ts",
+  "expo": {
+    "autolinking": {
+      "nativeModulesDir": "../modules",
+      "ios": {
+        "exclude": [
+          "react-native-liquid-glass"
+        ]
+      }
+    }
+  },
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",
@@ -13,6 +23,7 @@
     "@react-native-community/slider": "5.0.1",
     "expo": "~54.0.33",
     "expo-build-properties": "^1.0.10",
+    "expo-dev-client": "~6.0.20",
     "expo-status-bar": "~3.0.9",
     "react": "19.1.0",
     "react-native": "0.81.5",

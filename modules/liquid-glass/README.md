@@ -3,17 +3,16 @@
 [![npm version](https://img.shields.io/npm/v/@uginy/react-native-liquid-glass.svg)](https://www.npmjs.com/package/@uginy/react-native-liquid-glass)
 [![license](https://img.shields.io/npm/l/@uginy/react-native-liquid-glass.svg)](LICENSE)
 [![platform android](https://img.shields.io/badge/Android-13%2B-brightgreen.svg?logo=android)](https://developer.android.com/about/versions/13)
-[![platform ios](https://img.shields.io/badge/iOS-15%2B-blue.svg?logo=apple)](https://developer.apple.com)
 
 ---
 
 ## What is this?
 
-**A beautiful "liquid glass" blur effect for React Native cards and UI elements — on both Android and iOS.**
+**A beautiful "liquid glass" blur effect for React Native cards and UI elements — specialized for Android.**
 
-The "liquid glass" aesthetic was popularized by Apple in iOS 26. It gives UI elements a translucent, frosted-glass look with light refraction, blurred backdrop, edge glow, and glare — similar to looking through a piece of slightly curved glass.
+The "liquid glass" aesthetic became popular in modern mobile UI design. It gives UI elements a translucent, frosted-glass look with light refraction, blurred backdrop, edge glow, and glare — similar to looking through a piece of slightly curved glass.
 
-**The problem this solves:** React Native has no built-in way to achieve this effect with real refraction, chromatic aberration, and GPU-accelerated blur on Android. On iOS, UIKit's blur is basic. This library brings high-quality, fully customizable glass effects to both platforms.
+**The problem this solves:** React Native has no built-in way to achieve this effect with real refraction, chromatic aberration, and GPU-accelerated blur on Android. This library brings a high-quality, fully customizable glass effect optimized for Android.
 
 ---
 
@@ -22,7 +21,6 @@ The "liquid glass" aesthetic was popularized by Apple in iOS 26. It gives UI ele
 | Platform | Implementation | Min version | Notes |
 |----------|---------------|-------------|-------|
 | **Android** | AGSL GPU shader (`RuntimeShader`) | API 33 (Android 13) | Full shader: refraction, chromatic aberration, iridescence |
-| **iOS** | `UIVisualEffectView` + gradient overlays | iOS 15+ | Native blur with tint, glare, border effects |
 
 ---
 
@@ -39,7 +37,6 @@ yarn add @uginy/react-native-liquid-glass
 ```bash
 npx expo prebuild --clean
 npx expo run:android   # for Android
-npx expo run:ios       # for iOS
 ```
 
 > ⚠️ This library uses native code. **Expo Go does not work** — you need a dev build or bare React Native.
@@ -51,7 +48,6 @@ npx expo run:ios       # for iOS
 | | Requirement |
 |---|---|
 | Android | API 33+ (Android 13+), New Architecture enabled |
-| iOS | iOS 15+, Expo SDK 54+ or bare RN with Expo Modules |
 | React Native | New Architecture (`newArchEnabled=true`) |
 | Expo | SDK 54+ |
 
@@ -202,7 +198,7 @@ import {
 
 | Preset | Description |
 |---|---|
-| `LIQUID_GLASS_DEFAULTS` | Balanced default (like iOS) |
+| `LIQUID_GLASS_DEFAULTS` | Balanced default |
 | `LIQUID_GLASS_FROSTED` | Matte frosted glass with grain |
 | `LIQUID_GLASS_CRYSTAL` | High refraction, diamond-like |
 | `LIQUID_GLASS_WARM` | Warm amber tint |
@@ -261,26 +257,24 @@ import {
 2. Passes it as a texture to the GPU shader
 3. Renders per-pixel: blur samples, refraction offset, edge SDF (signed distance field), chromatic aberration, Fresnel, glare, iridescence, noise
 
-**iOS:** Uses `UIVisualEffectView` with `UIBlurEffect` (the same API that powers iOS navigation bars and sheets) for reliable system-level backdrop blur, plus `CAGradientLayer` overlays for glare, edge glow, and border effects.
+For non-Android platforms, the component gracefully falls back to a plain React Native `View`.
 
 ---
 
 ## Limitations
 
-| | Android | iOS |
-|---|---|---|
-| Live blur (updates on scroll) | ✅ Yes | ✅ Yes (system-level) |
-| Refraction / distortion | ✅ Full shader | ❌ Not available |
-| Chromatic aberration | ✅ Yes | ❌ Not available |
-| Blur style control | ✅ Exact radius | ⚠️ 4 preset levels only |
-| Iridescence | ✅ Yes | ⚠️ Color gradient only |
-| Minimum OS | Android 13+ | iOS 15+ |
-| Expo Go | ❌ Not supported | ❌ Not supported |
-| Web | ❌ Not supported | ❌ Not supported |
+| | Android |
+|---|---|
+| Live blur (updates on scroll) | ✅ Yes |
+| Refraction / distortion | ✅ Full shader |
+| Chromatic aberration | ✅ Yes |
+| Blur style control | ✅ Exact radius |
+| Iridescence | ✅ Yes |
+| Minimum OS | Android 13+ |
+| Expo Go | ❌ Not supported |
+| Web | ❌ Not supported |
 
 > **Why Android 13+?** The AGSL `RuntimeShader` API was introduced in API 33. On older Android versions, you'll need to use a different blur approach or hide the component.
-
-> **Why no refraction on iOS?** The UIVisualEffectView approach gives reliable, system-integrated blur. A Metal-based refraction implementation is planned for a future version.
 
 ---
 
@@ -303,12 +297,6 @@ npx expo run:android
 ### On Android the glass is opaque / no blur
 
 Ensure `newArchEnabled=true` in your `android/gradle.properties` or `app.json`.
-
-### Glass view is invisible on iOS
-
-iOS implementation relies on `UIVisualEffectView` which requires a non-clear background behind it. Wrap your screen in `ImageBackground` or set a background color on the parent.
-
----
 
 ## TypeScript
 
