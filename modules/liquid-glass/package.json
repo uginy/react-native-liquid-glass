@@ -1,6 +1,6 @@
 {
-  "name": "react-native-liquid-glass",
-  "version": "1.2.0",
+  "name": "@uginy/react-native-liquid-glass",
+  "version": "1.2.1",
   "description": "High-performance liquid glass effect for React Native — AGSL GPU shaders on Android, UIVisualEffectView on iOS",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -19,7 +19,8 @@
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf build",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "pub": "npm run build && npm publish --access public --ignore-scripts"
   },
   "keywords": [
     "react-native",
