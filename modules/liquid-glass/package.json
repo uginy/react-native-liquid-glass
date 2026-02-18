@@ -1,0 +1,59 @@
+{
+  "name": "react-native-liquid-glass",
+  "version": "1.1.0",
+  "description": "High-performance liquid glass effect for Android using native AGSL GPU shaders",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "files": [
+    "build/",
+    "android/src/",
+    "android/build.gradle",
+    "android/AndroidManifest.xml",
+    "src/",
+    "expo-module.config.json",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf build",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "android",
+    "glass",
+    "liquid-glass",
+    "agsl",
+    "shader",
+    "blur",
+    "refraction",
+    "glassmorphism",
+    "ui",
+    "animation"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uginy/react-native-liquid-glass.git"
+  },
+  "bugs": {
+    "url": "https://github.com/uginy/react-native-liquid-glass/issues"
+  },
+  "author": "Ugin <ievgen.khoptiar@gmail.com> (https://github.com/uginy)",
+  "license": "MIT",
+  "homepage": "https://github.com/uginy/react-native-liquid-glass#readme",
+  "devDependencies": {
+    "@types/react": "~19.1.0",
+    "expo": "^54.0.27",
+    "expo-module-scripts": "^5.0.8",
+    "react-native": "0.81.5",
+    "typescript": "^5.9.3"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
+  }
+}

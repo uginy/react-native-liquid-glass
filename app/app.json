@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "Liquid Glass Demo",
+    "slug": "liquid-glass-demo",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0a0a1a"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0a0a1a"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.liquidglass.demo"
+    },
+    "plugins": [
+      ["expo-build-properties", {
+        "android": {
+          "minSdkVersion": 33,
+          "compileSdkVersion": 36,
+          "targetSdkVersion": 36
+        }
+      }],
+      "./plugins/withDisablePointerTagging"
+    ]
+  }
+}
