@@ -11,6 +11,12 @@ Real-time refraction, chromatic aberration, backdrop blur, iridescence, edge glo
 
 ---
 
+## Demo
+
+[![Watch Demo on YouTube](https://raw.githubusercontent.com/uginy/react-native-liquid-glass/main/modules/liquid-glass/demo.jpg)](https://www.youtube.com/shorts/GCt0NsWkf98)
+
+---
+
 ## What is this?
 
 **A beautiful "liquid glass" blur effect for React Native cards and UI elements — on both Android and iOS.**
