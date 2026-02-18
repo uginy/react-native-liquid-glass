@@ -1,5 +1,5 @@
 {
-  "name": "@uginy/react-native-liquid-glass",
+  "name": "react-native-liquid-glass",
   "version": "1.2.1",
   "description": "High-performance liquid glass effect for React Native — AGSL GPU shaders on Android, UIVisualEffectView on iOS",
   "main": "build/index.js",

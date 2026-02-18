@@ -15,7 +15,7 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import { LiquidGlassView } from '@uginy/react-native-liquid-glass';
+import { LiquidGlassView } from 'react-native-liquid-glass';
 import Slider from '@react-native-community/slider';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 

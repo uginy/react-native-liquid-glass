@@ -16,7 +16,7 @@
     "expo-status-bar": "~3.0.9",
     "react": "19.1.0",
     "react-native": "0.81.5",
-    "@uginy/react-native-liquid-glass": "file:../modules/liquid-glass",
+    "react-native-liquid-glass": "file:../modules/liquid-glass",
     "react-native-safe-area-context": "~5.6.0"
   },
   "devDependencies": {
