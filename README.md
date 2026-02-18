@@ -13,7 +13,9 @@ Real-time refraction, chromatic aberration, backdrop blur, iridescence, edge glo
 
 ## Demo
 
-https://github.com/user-attachments/assets/67a8ec01-198a-419b-b619-a53c6c1b8fd1
+<div align="center">
+  <video src="https://github.com/user-attachments/assets/67a8ec01-198a-419b-b619-a53c6c1b8fd1" controls width="360"></video>
+</div>
 
 ---
 
