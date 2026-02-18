@@ -1,6 +1,11 @@
 {
-  "platforms": ["android"],
+  "platforms": ["android", "ios"],
   "android": {
     "modules": ["com.liquidglass.LiquidGlassModule"]
+  },
+  "ios": {
+    "modules": ["LiquidGlassModule"],
+    "podspecPath": "react-native-liquid-glass.podspec",
+    "swiftModuleName": "react_native_liquid_glass"
   }
 }

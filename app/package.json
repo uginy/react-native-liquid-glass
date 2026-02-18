@@ -4,12 +4,7 @@
   "main": "index.ts",
   "expo": {
     "autolinking": {
-      "nativeModulesDir": "../modules",
-      "ios": {
-        "exclude": [
-          "@uginy/react-native-liquid-glass"
-        ]
-      }
+      "nativeModulesDir": "../modules"
     }
   },
   "scripts": {

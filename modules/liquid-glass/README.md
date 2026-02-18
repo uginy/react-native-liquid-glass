@@ -3,16 +3,17 @@
 [![npm version](https://img.shields.io/npm/v/@uginy/react-native-liquid-glass.svg)](https://www.npmjs.com/package/@uginy/react-native-liquid-glass)
 [![license](https://img.shields.io/npm/l/@uginy/react-native-liquid-glass.svg)](LICENSE)
 [![platform android](https://img.shields.io/badge/Android-13%2B-brightgreen.svg?logo=android)](https://developer.android.com/about/versions/13)
+[![platform ios](https://img.shields.io/badge/iOS-15%2B-blue.svg?logo=apple)](https://developer.apple.com)
 
 ---
 
 ## What is this?
 
-**A beautiful "liquid glass" blur effect for React Native cards and UI elements — specialized for Android.**
+**A beautiful "liquid glass" blur effect for React Native cards and UI elements — on both Android and iOS.**
 
 The "liquid glass" aesthetic became popular in modern mobile UI design. It gives UI elements a translucent, frosted-glass look with light refraction, blurred backdrop, edge glow, and glare — similar to looking through a piece of slightly curved glass.
 
-**The problem this solves:** React Native has no built-in way to achieve this effect with real refraction, chromatic aberration, and GPU-accelerated blur on Android. This library brings a high-quality, fully customizable glass effect optimized for Android.
+**The problem this solves:** React Native has no built-in way to achieve this effect with rich glass controls across platforms. This library provides a unified API with high-fidelity Android shaders and a native iOS compositor.
 
 ---
 
@@ -21,6 +22,7 @@ The "liquid glass" aesthetic became popular in modern mobile UI design. It gives
 | Platform | Implementation | Min version | Notes |
 |----------|---------------|-------------|-------|
 | **Android** | AGSL GPU shader (`RuntimeShader`) | API 33 (Android 13) | Full shader: refraction, chromatic aberration, iridescence |
+| **iOS** | `UIVisualEffectView` + native compositing layers | iOS 15+ | Same props API, tuned iOS rendering pipeline |
 
 ---
 
@@ -37,6 +39,7 @@ yarn add @uginy/react-native-liquid-glass
 ```bash
 npx expo prebuild --clean
 npx expo run:android   # for Android
+npx expo run:ios       # for iOS
 ```
 
 > ⚠️ This library uses native code. **Expo Go does not work** — you need a dev build or bare React Native.
@@ -48,6 +51,7 @@ npx expo run:android   # for Android
 | | Requirement |
 |---|---|
 | Android | API 33+ (Android 13+), New Architecture enabled |
+| iOS | iOS 15+ |
 | React Native | New Architecture (`newArchEnabled=true`) |
 | Expo | SDK 54+ |
 
@@ -257,22 +261,22 @@ import {
 2. Passes it as a texture to the GPU shader
 3. Renders per-pixel: blur samples, refraction offset, edge SDF (signed distance field), chromatic aberration, Fresnel, glare, iridescence, noise
 
-For non-Android platforms, the component gracefully falls back to a plain React Native `View`.
+**iOS:** Uses `UIVisualEffectView` with a native compositing stack (tint, glare, chroma split, edge glow, noise) and applies the same public props so behavior stays API-compatible with Android.
 
 ---
 
 ## Limitations
 
-| | Android |
-|---|---|
-| Live blur (updates on scroll) | ✅ Yes |
-| Refraction / distortion | ✅ Full shader |
-| Chromatic aberration | ✅ Yes |
-| Blur style control | ✅ Exact radius |
-| Iridescence | ✅ Yes |
-| Minimum OS | Android 13+ |
-| Expo Go | ❌ Not supported |
-| Web | ❌ Not supported |
+| | Android | iOS |
+|---|---|---|
+| Live blur (updates on scroll) | ✅ Yes | ✅ Yes |
+| Refraction / distortion | ✅ Full shader | ⚠️ Simulated via native compositor |
+| Chromatic aberration | ✅ Yes | ✅ Layer-based simulation |
+| Blur style control | ✅ Exact radius | ⚠️ Mapped to material styles |
+| Iridescence | ✅ Yes | ✅ Layer-based simulation |
+| Minimum OS | Android 13+ | iOS 15+ |
+| Expo Go | ❌ Not supported | ❌ Not supported |
+| Web | ❌ Not supported | ❌ Not supported |
 
 > **Why Android 13+?** The AGSL `RuntimeShader` API was introduced in API 33. On older Android versions, you'll need to use a different blur approach or hide the component.
 
@@ -292,6 +296,7 @@ Run:
 ```bash
 npx expo prebuild --clean
 npx expo run:android
+npx expo run:ios
 ```
 
 ### On Android the glass is opaque / no blur

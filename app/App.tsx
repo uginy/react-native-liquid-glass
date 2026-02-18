@@ -15,14 +15,11 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
+import { LiquidGlassView } from '@uginy/react-native-liquid-glass';
 import Slider from '@react-native-community/slider';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const PANEL_HEIGHT = 480;
-const GlassView: React.ComponentType<any> =
-  Platform.OS === 'android'
-    ? require('@uginy/react-native-liquid-glass').LiquidGlassView
-    : View;
 
 const TINT_PRESETS = [
   { label: 'White', color: '#ffffff' },
@@ -92,22 +89,8 @@ const GlassCard = memo(function GlassCard({
   card: CardModel;
   settings: GlassSettings;
 }) {
-  if (Platform.OS !== 'android') {
-    return (
-      <View style={[styles.card, styles.plainCard]}>
-        <View style={styles.cardContent}>
-          <Text style={styles.cardIcon}>{card.icon}</Text>
-          <View style={styles.cardTextContainer}>
-            <Text style={styles.cardTitle}>{card.title}</Text>
-            <Text style={styles.cardSubtitle}>{card.subtitle}</Text>
-          </View>
-        </View>
-      </View>
-    );
-  }
-
   return (
-    <GlassView
+    <LiquidGlassView
       blurRadius={settings.blurRadius}
       refractionStrength={settings.refractionStrength}
       chromaticAberration={settings.chromaticAberration}
@@ -134,7 +117,7 @@ const GlassCard = memo(function GlassCard({
           <Text style={styles.cardSubtitle}>{card.subtitle}</Text>
         </View>
       </View>
-    </GlassView>
+    </LiquidGlassView>
   );
 });
 
@@ -198,7 +181,7 @@ function AppScreen() {
         resizeMode="cover"
       >
         <View style={[styles.header, { paddingTop: topInset + 8 }]}>
-          <Text style={styles.headerTitle}>Liquid Glass Demo (Android Focus)</Text>
+          <Text style={styles.headerTitle}>Liquid Glass Demo</Text>
         </View>
 
         <FlatList
@@ -404,7 +387,6 @@ const styles = StyleSheet.create({
   scrollView: { flex: 1 },
   scrollContent: { paddingHorizontal: 16, paddingTop: 10, gap: 16 },
   card: { width: '100%', minHeight: 90, borderRadius: 24 },
-  plainCard: { backgroundColor: 'rgba(255,255,255,0.08)' },
   cardContent: { flexDirection: 'row', alignItems: 'center', padding: 20, gap: 16 },
   cardIcon: { fontSize: 36 },
   cardTextContainer: { flex: 1 },
