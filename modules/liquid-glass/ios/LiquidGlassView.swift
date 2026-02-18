@@ -51,7 +51,7 @@ public final class LiquidGlassView: ExpoView {
     backgroundColor = .clear
 
     blurView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-    addSubview(blurView)
+    insertSubview(blurView, at: 0)
 
     [tintView, desaturateView, vibranceView, brightnessView, chromaView, glareView, noiseView].forEach {
       $0.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -97,8 +97,16 @@ public final class LiquidGlassView: ExpoView {
     tintB = Float(b)
   }
 
+  public override func didAddSubview(_ subview: UIView) {
+    super.didAddSubview(subview)
+    if subview !== blurView {
+      ensureBackgroundBehindContent()
+    }
+  }
+
   public override func layoutSubviews() {
     super.layoutSubviews()
+    ensureBackgroundBehindContent()
 
     // Overscan avoids edge artifacts when optical transform offsets/scales the blur.
     let overscan: CGFloat = 14
@@ -147,6 +155,16 @@ public final class LiquidGlassView: ExpoView {
       style = .systemChromeMaterial
     }
     blurView.effect = UIBlurEffect(style: style)
+  }
+
+  private func ensureBackgroundBehindContent() {
+    if blurView.superview !== self {
+      insertSubview(blurView, at: 0)
+      return
+    }
+    if let first = subviews.first, first !== blurView {
+      insertSubview(blurView, at: 0)
+    }
   }
 
   private func updateTint() {
