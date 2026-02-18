@@ -1,6 +1,6 @@
 {
   "name": "@uginy/react-native-liquid-glass",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "High-performance liquid glass effect for React Native — Android-focused AGSL GPU shaders",
   "main": "build/index.js",
   "types": "build/index.d.ts",
