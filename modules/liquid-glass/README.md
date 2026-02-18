@@ -12,7 +12,7 @@
 
 ## Demo
 
-[![Watch Demo on YouTube](https://img.youtube.com/vi/GCt0NsWkf98/maxresdefault.jpg)](https://youtube.com/shorts/GCt0NsWkf98)
+[![Watch Demo on YouTube](https://raw.githubusercontent.com/uginy/react-native-liquid-glass/main/modules/liquid-glass/demo.jpg)](https://www.youtube.com/shorts/GCt0NsWkf98)
 
 ---
 
