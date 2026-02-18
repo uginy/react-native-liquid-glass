@@ -9,7 +9,6 @@
     "android/src/",
     "android/build.gradle",
     "android/AndroidManifest.xml",
-    "ios/",
     "src/",
     "expo-module.config.json",
     "README.md",

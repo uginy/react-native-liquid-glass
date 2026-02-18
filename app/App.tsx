@@ -21,7 +21,7 @@ import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-cont
 const PANEL_HEIGHT = 480;
 const GlassView: React.ComponentType<any> =
   Platform.OS === 'android'
-    ? require('react-native-liquid-glass').LiquidGlassView
+    ? require('@uginy/react-native-liquid-glass').LiquidGlassView
     : View;
 
 const TINT_PRESETS = [
