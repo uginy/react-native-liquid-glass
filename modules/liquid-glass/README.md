@@ -1,9 +1,12 @@
 # @uginy/react-native-liquid-glass
 
 [![npm version](https://img.shields.io/npm/v/@uginy/react-native-liquid-glass.svg)](https://www.npmjs.com/package/@uginy/react-native-liquid-glass)
+[![npm downloads](https://img.shields.io/npm/dm/@uginy/react-native-liquid-glass.svg)](https://www.npmjs.com/package/@uginy/react-native-liquid-glass)
 [![license](https://img.shields.io/npm/l/@uginy/react-native-liquid-glass.svg)](LICENSE)
 [![platform android](https://img.shields.io/badge/Android-13%2B-brightgreen.svg?logo=android)](https://developer.android.com/about/versions/13)
 [![platform ios](https://img.shields.io/badge/iOS-15%2B-blue.svg?logo=apple)](https://developer.apple.com)
+
+**📦 [npmjs.com/package/@uginy/react-native-liquid-glass](https://www.npmjs.com/package/@uginy/react-native-liquid-glass)**
 
 ---
 
