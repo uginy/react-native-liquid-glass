@@ -22,6 +22,5 @@ Pod::Spec.new do |s|
     'SWIFT_COMPILATION_MODE' => 'wholemodule'
   }
 
-  s.source_files = "ios/**/*.{swift,metal}"
-  s.resources = "ios/**/*.metal"
+  s.source_files = "ios/**/*.swift"
 end

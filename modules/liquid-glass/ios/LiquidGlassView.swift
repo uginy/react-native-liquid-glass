@@ -47,6 +47,9 @@ public class LiquidGlassView: ExpoView {
     private static let sharedPipelineLock = NSLock()
     private static var sharedMetalDevice: MTLDevice?
     private static var sharedMetalPipeline: MTLRenderPipelineState?
+    private static let sharedFrameLock = NSLock()
+    private static var sharedFrameSubscribers = NSHashTable<LiquidGlassView>.weakObjects()
+    private static var sharedDisplayLink: CADisplayLink?
 
     // MARK: - Props
     var blurRadius:          Float = 20   { didSet { requestRender() } }
@@ -93,7 +96,6 @@ public class LiquidGlassView: ExpoView {
     private var borderLayer:   CALayer!
 
     // MARK: - Loop
-    private var displayLink:   CADisplayLink?
     private var needsCapture   = true
     private var needsPropRender = true
     private var lastOffsetYInBg: CGFloat = .greatestFiniteMagnitude
@@ -115,7 +117,7 @@ public class LiquidGlassView: ExpoView {
     required init?(coder: NSCoder) { fatalError() }
 
     deinit {
-        displayLink?.invalidate()
+        LiquidGlassView.unregisterForFrames(self)
         metalLayer?.removeFromSuperlayer()
         metalLayer = nil
         commandQueue = nil
@@ -139,7 +141,7 @@ public class LiquidGlassView: ExpoView {
         layer.pixelFormat = .bgra8Unorm
         layer.framebufferOnly = false
         layer.isOpaque = false
-        layer.contentsScale = UIScreen.main.scale
+        layer.contentsScale = min(UIScreen.main.scale, 2.0)
         layer.zPosition = -100
         metalLayer = layer
         
@@ -239,7 +241,7 @@ public class LiquidGlassView: ExpoView {
     public override func layoutSubviews() {
         super.layoutSubviews()
         
-        let s = UIScreen.main.scale
+        let s = min(UIScreen.main.scale, 2.0)
         metalLayer?.frame = bounds
         metalLayer?.drawableSize = CGSize(width: bounds.width * s, height: bounds.height * s)
         borderLayer.frame = bounds
@@ -257,24 +259,48 @@ public class LiquidGlassView: ExpoView {
     }
 
     // MARK: - Loop
-    private func startLoop() {
-        if displayLink == nil {
-            displayLink = CADisplayLink(target: self, selector: #selector(onFrame))
+    private static func registerForFrames(_ view: LiquidGlassView) {
+        sharedFrameLock.lock()
+        sharedFrameSubscribers.add(view)
+        if sharedDisplayLink == nil {
+            let link = CADisplayLink(target: LiquidGlassView.self, selector: #selector(onSharedFrame(_:)))
             if #available(iOS 15.0, *) {
-                displayLink?.preferredFrameRateRange = CAFrameRateRange(minimum: 30, maximum: 60, preferred: 60)
+                link.preferredFrameRateRange = CAFrameRateRange(minimum: 30, maximum: 60, preferred: 60)
             } else {
-                displayLink?.preferredFramesPerSecond = 30
+                link.preferredFramesPerSecond = 30
             }
-            displayLink?.add(to: .main, forMode: .common)
+            link.add(to: .main, forMode: .common)
+            sharedDisplayLink = link
         }
-    }
-    
-    private func stopLoop() {
-        displayLink?.invalidate()
-        displayLink = nil
+        sharedFrameLock.unlock()
     }
 
-    @objc private func onFrame() {
+    private static func unregisterForFrames(_ view: LiquidGlassView) {
+        sharedFrameLock.lock()
+        sharedFrameSubscribers.remove(view)
+        if sharedFrameSubscribers.allObjects.isEmpty {
+            sharedDisplayLink?.invalidate()
+            sharedDisplayLink = nil
+        }
+        sharedFrameLock.unlock()
+    }
+
+    @objc private static func onSharedFrame(_ link: CADisplayLink) {
+        sharedFrameLock.lock()
+        let views = sharedFrameSubscribers.allObjects
+        sharedFrameLock.unlock()
+        for view in views { view.handleFrame() }
+    }
+
+    private func startLoop() {
+        LiquidGlassView.registerForFrames(self)
+    }
+
+    private func stopLoop() {
+        LiquidGlassView.unregisterForFrames(self)
+    }
+
+    private func handleFrame() {
         guard window != nil, !isHidden, alpha > 0, isVisibleInWindow() else { return }
         
         var shouldRender = false
